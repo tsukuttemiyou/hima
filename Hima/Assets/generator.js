@@ -7,16 +7,24 @@ var myCube05:Transform;
 var myCube06:Transform;
 var score = 0;
 var isMouseDown = false;
+var increaseRate = 1.1;
+var currentAdd = 100;
+var appearTimeArray = new float[600];
+var appearedIndex = 0;
 
 function Start () {
-
+	for(var i = 0 ; i < 600; i++){
+		appearTimeArray[i] = Random.Range(0.0001, 60.0);
+	}
+	//appearTimeArray.sort(function(a, b) { return a - b;});
 }
 
 function Update () {
 	var winh = Camera.main.orthographicSize;    
 	var winw = winh * Screen.width / Screen.height;
 
-	if(Random.Range(0, 100) == 0){
+	if(0.0 < Time.time){
+		appearedIndex += 1;
     	var sr = myCube01.GetComponent.<SpriteRenderer>();
 		var w = sr.bounds.size.x;
 		var h = sr.bounds.size.y;
@@ -72,12 +80,27 @@ function Update () {
 			Destroy(hit.collider.gameObject);
 
 			var name = hit.collider.gameObject.name.Substring(0,2);
-			if(name == "01")score += 10;
-			if(name == "02")score += 10;
-			if(name == "03")score += 10;
-			if(name == "04")score -= 10;
-			if(name == "05")score -= 10;
-			if(name == "06")score -= 10;
+			if(name == "01"){
+				score += currentAdd;
+				currentAdd *= increaseRate;
+			}
+			if(name == "02"){
+				score += currentAdd;
+				currentAdd *= increaseRate;
+			}
+			if(name == "03"){
+				score += currentAdd;
+				currentAdd *= increaseRate;
+			}
+			if(name == "04"){
+				currentAdd = 100;
+			}
+			if(name == "05"){
+				currentAdd = 100;
+			}
+			if(name == "06"){
+				currentAdd = 100;
+			}
 		}
 	}
 	var textObject = GameObject.Find("Score");
