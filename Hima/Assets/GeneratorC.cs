@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GeneratorC : MonoBehaviour {
@@ -12,11 +12,21 @@ public class GeneratorC : MonoBehaviour {
 	public GameObject myCube08;
 	public GameObject cutinMovie;
 
-	int score = 0;
 	bool isMouseDown = false;
 	float increaseRate = 1.1f;
 	int appearCount = 0;
 	int currentAdd = 100;
+	private ulong score = 0;		//スコア
+	private ulong scoreShow = 0;	//表示用スコア
+	private ulong preScore = 0;     //スコア前回値
+	private ulong addScore = 0;		//スコア加算値
+
+	private int combo = 0;
+
+	float coefRate = 1.1f;
+	ulong baseAdd = 100;
+	float[] appearTimeArray = new float[600];
+	int appearedIndex = 0;
 	float penalty = -1000;
 
 	float appearSum(float time){
@@ -104,12 +114,14 @@ public class GeneratorC : MonoBehaviour {
 				string name = hit.collider.gameObject.name.Substring(0,2);
 				if(name == "01" || name == "02" || name == "03"){
 					Destroy(hit.collider.gameObject);
-					score += currentAdd;
-					currentAdd = (int)(currentAdd * increaseRate);
+					score += (ulong)(baseAdd * increaseRate);
+					increaseRate *= coefRate;
+					combo++;
 				}
 				if (name == "04" || name == "05" || name == "06") {
 					Destroy(hit.collider.gameObject);
-					currentAdd = 100;
+					increaseRate = 1.0f;
+					combo = 0;
 					penalty = Time.time + 2.0f;
 				}
 				if (name == "04"){
@@ -122,8 +134,9 @@ public class GeneratorC : MonoBehaviour {
 						name = obs.name.Substring(0,2);
 						if(name == "01" || name == "02" || name == "03"|| name == "08"){
 							Destroy(obs);
-							score += currentAdd;
-							currentAdd = (int)(currentAdd * increaseRate);
+							score += (ulong)((baseAdd * increaseRate) * 2.0f);
+							increaseRate *= coefRate;
+							combo++;
 						}
 					}
 					Instantiate(cutinMovie, new Vector3(0, 0, -1), Quaternion.Euler(0, 0, 0));
@@ -131,12 +144,34 @@ public class GeneratorC : MonoBehaviour {
 				}
 			}
 		}
-		GameObject textObject = GameObject.Find("Score");
-		string scoreText = "     " + score;
-		TextMesh mesh = textObject.GetComponent(typeof(TextMesh) ) as TextMesh;
-		mesh.text = scoreText.Substring(scoreText.Length - 5, 5);
 
-		GameObject timeObject = GameObject.Find("Time");
+		GameObject scoreObject = GameObject.Find("Score");
+		TextMesh scoreMesh = scoreObject.GetComponent(typeof(TextMesh) ) as TextMesh;
+
+		//スコアが更新されていれば加算値を更新
+		if (preScore != score) {
+			addScore = (score - scoreShow) / 180;
+			Debug.Log (addScore);
+			preScore = score;		//前回値保存
+		}
+
+		if (addScore < 1) { addScore = 1;} //下限ガード
+		if(score == 0){addScore = 0;}		//score = 0 の時は加算しない
+
+		scoreShow += addScore;
+
+		if (scoreShow > score) { scoreShow = score;}  //上限ガード
+
+		scoreMesh.text = scoreShow.ToString("000000000");
+
+		//コンボ数表示
+		GameObject comboObject = GameObject.Find("Combo");
+		TextMesh comboMesh = comboObject.GetComponent(typeof(TextMesh) ) as TextMesh;
+		comboMesh.text = combo.ToString("000");
+
+
+        int tempTime;
+        GameObject timeObject = GameObject.Find("Time");
 		string timeText = " " + (int)(60 - Time.time);
 		TextMesh timeMesh = timeObject.GetComponent(typeof(TextMesh) ) as TextMesh;
 		timeMesh.text = timeText.Substring(timeText.Length - 2, 2);
