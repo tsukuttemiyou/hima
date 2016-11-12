@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class GeneratorC : MonoBehaviour {
@@ -25,15 +25,27 @@ public class GeneratorC : MonoBehaviour {
 
 	float coefRate = 1.1f;
 	ulong baseAdd = 100;
-	float[] appearTimeArray = new float[600];
 	int appearedIndex = 0;
 	float penalty = -1000;
+	float startTime = 0.0f;
 
 	float appearSum(float time){
 		float N0 = 0.5f;
 		float NT = 2.0f;
 		float NN = 600f;
 		float T = 60;
+
+		switch (StartButton.getLevel ()) {
+		case -1:
+			NN = 100.0f;
+			break;
+		case 0:
+			NN = 300.0f;
+			break;
+		case 1:
+			NN = 600.0f;
+			break;
+		}
 
 		time = Mathf.Max (Mathf.Min (time, T), 0.0f);
 		float timeRand = time + Random.value * 0.2f * (T - time) / T;
@@ -42,6 +54,7 @@ public class GeneratorC : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		startTime = Time.time;
 	}
 	
 	// Update is called once per frame
@@ -49,7 +62,7 @@ public class GeneratorC : MonoBehaviour {
 		float winh = Camera.main.orthographicSize * 2;    
 		float winw = winh * Screen.width / Screen.height;
 
-		while((int)(appearSum(Time.time) - appearCount) > 0){
+		while((int)(appearSum(Time.time - startTime) - appearCount) > 0){
 			SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
 			float w = sr.bounds.size.x;
 			float h = sr.bounds.size.y;
@@ -172,7 +185,7 @@ public class GeneratorC : MonoBehaviour {
 
         int tempTime;
         GameObject timeObject = GameObject.Find("Time");
-		string timeText = " " + (int)(60 - Time.time);
+		string timeText = " " + (int)(60 - (Time.time - startTime));
 		TextMesh timeMesh = timeObject.GetComponent(typeof(TextMesh) ) as TextMesh;
 		timeMesh.text = timeText.Substring(timeText.Length - 2, 2);
 
