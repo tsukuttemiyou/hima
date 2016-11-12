@@ -20,7 +20,7 @@ public class GeneratorC : MonoBehaviour {
 	private int percentage04 = 6; //まひ
 	private int percentage05 = 6; //マヒ
 	private int percentage06 = 6; //蝦
-	private int percentage07 = 1; //ひまわり
+	private int percentage08 = 1; //ひまわり
 
 	//総出現コマ数
 	private const int APPEAR_NUM = 600;
@@ -49,10 +49,15 @@ public class GeneratorC : MonoBehaviour {
 	float startTime = 0.0f;
 
 	float appearSum(float time){
-		float N0 = 0.5f;
-		float NT = 2.0f;
-		float NN = 600f;
-		float T = 60;
+		time = Mathf.Max (Mathf.Min (time, T), 0.0f);
+		float timeRand = time + Random.value * 0.2f * (T - time) / T;
+		return (float)(N0*timeRand + (NT - N0)*timeRand*timeRand/2.0f/T)/(N0*T+(NT - N0)*T/2.0f)*NN;
+	}
+
+	// Use this for initialization
+	void Start () {
+
+		startTime = Time.time;
 
 		switch (StartButton.getLevel ()) {
 		case -1:
@@ -65,19 +70,29 @@ public class GeneratorC : MonoBehaviour {
 			NN = 600.0f;
 			break;
 		}
+			
+		float coef = NN / 100.0f;
 
-		time = Mathf.Max (Mathf.Min (time, T), 0.0f);
-		float timeRand = time + Random.value * 0.2f * (T - time) / T;
-		return (float)(N0*timeRand + (NT - N0)*timeRand*timeRand/2.0f/T)/(N0*T+(NT - N0)*T/2.0f)*NN;
-	}
+		int loop;
+		loop = (int)(coef * percentage01);  for (int i = 0; i < loop; i++) { appearOrder.Add (0);}
+		loop = (int)(coef * percentage02);  for (int i = 0; i < loop; i++) { appearOrder.Add (1);}
+		loop = (int)(coef * percentage03);  for (int i = 0; i < loop; i++) { appearOrder.Add (2);}
+		loop = (int)(coef * percentage04);  for (int i = 0; i < loop; i++) { appearOrder.Add (3);}
+		loop = (int)(coef * percentage05);  for (int i = 0; i < loop; i++) { appearOrder.Add (4);}
+		loop = (int)(coef * percentage06);  for (int i = 0; i < loop; i++) { appearOrder.Add (5);}
+		loop = (int)(coef * percentage08);  for (int i = 0; i < loop; i++) { appearOrder.Add (6);}
 
-	// Use this for initialization
-	void Start () {
-		startTime = Time.time;
-//		NN = (float)APPEAR_NUM;
-
-		//float Coef = 0.0f;
-		//for(int i = 0)
+		//ランダムに並び替え
+		System.Random rng = new System.Random();
+		int n = appearOrder.Count;
+		while (n > 1)
+		{
+			n--;
+			int k = rng.Next(n + 1);
+			int tmp = appearOrder[k];
+			appearOrder[k] = appearOrder[n];
+			appearOrder[n] = tmp;
+		}
 	}
 	
 	// Update is called once per frame
@@ -106,7 +121,7 @@ public class GeneratorC : MonoBehaviour {
 			//Debug.Log(y);
 			//Debug.Log(yv);
 
-			int index = Random.Range(0, 7);
+			int index = appearOrder[appearCount];
 			GameObject cube;
 			Rigidbody rb;
 			if(index == 0){
