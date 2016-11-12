@@ -12,20 +12,26 @@ public class GeneratorC : MonoBehaviour {
 	public GameObject myCube08;
 	public GameObject cutinMovie;
 
-	ulong score = 0;
+	int score = 0;
 	bool isMouseDown = false;
 	float increaseRate = 1.1f;
-	ulong currentAdd = 100;
-	float[] appearTimeArray = new float[600];
-	int appearedIndex = 0;
+	int appearCount = 0;
+	int currentAdd = 100;
 	float penalty = -1000;
+
+	float appearSum(float time){
+		float N0 = 0.5f;
+		float NT = 2.0f;
+		float NN = 600f;
+		float T = 60;
+
+		time = Mathf.Max (Mathf.Min (time, T), 0.0f);
+		float timeRand = time + Random.value * 0.2f * (T - time) / T;
+		return (float)(N0*timeRand + (NT - N0)*timeRand*timeRand/2.0f/T)/(N0*T+(NT - N0)*T/2.0f)*NN;
+	}
 
 	// Use this for initialization
 	void Start () {
-		for(var i = 0 ; i < 600; i++){
-			appearTimeArray[i] = Random.Range(0.0001f, 60.0f);
-		}
-		System.Array.Sort (appearTimeArray);
 	}
 	
 	// Update is called once per frame
@@ -33,8 +39,7 @@ public class GeneratorC : MonoBehaviour {
 		float winh = Camera.main.orthographicSize * 2;    
 		float winw = winh * Screen.width / Screen.height;
 
-		if(appearedIndex < 600 && appearTimeArray[appearedIndex] < Time.time){
-			appearedIndex += 1;
+		while((int)(appearSum(Time.time) - appearCount) > 0){
 			SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
 			float w = sr.bounds.size.x;
 			float h = sr.bounds.size.y;
@@ -87,7 +92,9 @@ public class GeneratorC : MonoBehaviour {
 				rb = cube.GetComponent<Rigidbody>();
 				rb.velocity = new Vector3(xv, yv, 0);
 			}
+			appearCount++;
 		}
+		Debug.Log(appearCount);
 
 		if(Input.GetMouseButton(0) && !isMouseDown && penalty < Time.time){
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -98,7 +105,7 @@ public class GeneratorC : MonoBehaviour {
 				if(name == "01" || name == "02" || name == "03"){
 					Destroy(hit.collider.gameObject);
 					score += currentAdd;
-					currentAdd = (ulong)(currentAdd * increaseRate);
+					currentAdd = (int)(currentAdd * increaseRate);
 				}
 				if (name == "04" || name == "05" || name == "06") {
 					Destroy(hit.collider.gameObject);
@@ -116,7 +123,7 @@ public class GeneratorC : MonoBehaviour {
 						if(name == "01" || name == "02" || name == "03"|| name == "08"){
 							Destroy(obs);
 							score += currentAdd;
-							currentAdd = (ulong)(currentAdd * increaseRate);
+							currentAdd = (int)(currentAdd * increaseRate);
 						}
 					}
 					Instantiate(cutinMovie, new Vector3(0, 0, -1), Quaternion.Euler(0, 0, 0));
@@ -125,22 +132,16 @@ public class GeneratorC : MonoBehaviour {
 			}
 		}
 		GameObject textObject = GameObject.Find("Score");
-		//string scoreText = "     " + score;
+		string scoreText = "     " + score;
 		TextMesh mesh = textObject.GetComponent(typeof(TextMesh) ) as TextMesh;
-        //mesh.text = scoreText.Substring(scoreText.Length - 5, 5);
-        mesh.text = score.ToString("000000000");
+		mesh.text = scoreText.Substring(scoreText.Length - 5, 5);
 
-        int tempTime;
-        GameObject timeObject = GameObject.Find("Time");
-		//string timeText = " " + (int)(60 - Time.time);
+		GameObject timeObject = GameObject.Find("Time");
+		string timeText = " " + (int)(60 - Time.time);
 		TextMesh timeMesh = timeObject.GetComponent(typeof(TextMesh) ) as TextMesh;
-        tempTime = (int)(60 - Time.time);
-        tempTime = Mathf.Clamp(tempTime, 0, 60);
+		timeMesh.text = timeText.Substring(timeText.Length - 2, 2);
 
-        timeMesh.text = tempTime.ToString("00");
-        if (0 == tempTime) { timeMesh.text = "END"; }
-
-        isMouseDown = Input.GetMouseButton(0);
+		isMouseDown = Input.GetMouseButton(0);
 
 	}
 }
