@@ -36,7 +36,7 @@ public class GeneratorC : MonoBehaviour {
 	float increaseRate = 1.1f;
 	int appearCount = 0;
 	int currentAdd = 100;
-	private ulong score = 0;		//スコア
+	private static ulong score = 0;		//スコア
 	private ulong scoreShow = 0;	//表示用スコア
 	private ulong preScore = 0;     //スコア前回値
 	private ulong addScore = 0;		//スコア加算値
@@ -56,8 +56,16 @@ public class GeneratorC : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
+		//初期化
 		startTime = Time.time;
+		addScore = 0;
+		preScore = 0;
+		scoreShow = 0;
+		score = 0;
+		coefRate = 1.1f;
+		baseAdd = 100;
+
+
 
 		switch (StartButton.getLevel ()) {
 		case -1:
@@ -94,6 +102,11 @@ public class GeneratorC : MonoBehaviour {
 			appearOrder[n] = tmp;
 		}
 	}
+
+	public static int getScore(){
+		return (int)score;
+	}
+
 	
 	// Update is called once per frame
 	void Update () {
