@@ -229,5 +229,8 @@ public class GeneratorC : MonoBehaviour {
 
 		isMouseDown = Input.GetMouseButton(0);
 
+		if (Time.time - startTime > 60) {
+			Application.LoadLevel("Result");
+		}
 	}
 }
