@@ -11,6 +11,7 @@ public class GeneratorC : MonoBehaviour {
 	public GameObject myCube06;
 	public GameObject myCube07;
 	public GameObject myCube08;
+	public GameObject myCube09;
 	public GameObject cutinMovie;
 
 	//出現パーセンテージ下記合計が１００になること
@@ -22,12 +23,20 @@ public class GeneratorC : MonoBehaviour {
 	private int percentage06 = 6; //蝦
 	private int percentage08 = 1; //ひまわり
 
+	//private int percentage01 = 50; //ひま
+	//private int percentage02 = 0; //ヒマ
+	//private int percentage03 = 0; //暇
+	//private int percentage04 = 50; //蝦
+	//private int percentage05 = 0; //まひ
+	//private int percentage06 = 0; //マヒ
+	//private int percentage08 = 0; //ひまわり
+
 	//総出現コマ数
-	private const int APPEAR_NUM = 600;
+	private const int APPEAR_NUM = 300;
 	List<int> appearOrder = new List<int>();
 
 	//ランダム生成用定数
-	private const float N0 = 0.5f;
+	private const float N0 = 0.2f;
 	private const float NT = 2.0f;
 	private const float T = 60;
 	private float NN;	//←こいつは個数のため別途定数を定義して設定
@@ -168,11 +177,25 @@ public class GeneratorC : MonoBehaviour {
 			}
 			appearCount++;
 		}
-		Debug.Log(appearCount);
+		//Debug.Log(appearCount);
+		Debug.Log(Input.mousePosition);
 
 		if(Input.GetMouseButton(0) && !isMouseDown && penalty < Time.time){
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit ;
+			RaycastHit2D hit2d ;
+		
+
+			hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction,10f);
+
+			if (null != hit2d.collider) {
+
+				string name = hit2d.collider.gameObject.name.Substring(0,2);
+				if (name == "07") {
+					goto SkipLabel;
+				}
+			}
+
 			if(Physics.Raycast(ray, out hit)){
 
 				string name = hit.collider.gameObject.name.Substring(0,2);
@@ -186,7 +209,10 @@ public class GeneratorC : MonoBehaviour {
 					Destroy(hit.collider.gameObject);
 					increaseRate = 1.0f;
 					combo = 0;
-					penalty = Time.time + 2.0f;
+					//penalty = Time.time + 2.0f;
+				}
+				if ( name == "05" || name == "06"){
+					Instantiate(myCube09, new Vector3(0, 0, -1), Quaternion.Euler(0, 0, 0));
 				}
 				if (name == "04"){
 					Instantiate(myCube07, new Vector3(0, 0, -1), Quaternion.Euler(0, 0, 0));
@@ -209,6 +235,7 @@ public class GeneratorC : MonoBehaviour {
 			}
 		}
 
+	SkipLabel:
 		GameObject scoreObject = GameObject.Find("Score");
 		TextMesh scoreMesh = scoreObject.GetComponent(typeof(TextMesh) ) as TextMesh;
 
