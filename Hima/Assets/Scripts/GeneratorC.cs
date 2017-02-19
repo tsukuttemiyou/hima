@@ -14,8 +14,10 @@ public class GeneratorC : MonoBehaviour {
 	public GameObject myCube09;
 	public GameObject cutinMovie;
 
-	//出現パーセンテージ下記合計が１００になること
-	private int percentage01 = 27; //ひま
+    public AudioClip[] audioClipArray;
+
+    //出現パーセンテージ下記合計が１００になること
+    private int percentage01 = 27; //ひま
 	private int percentage02 = 27; //ヒマ
 	private int percentage03 = 27; //暇
 	private int percentage04 = 6; //まひ
@@ -52,13 +54,21 @@ public class GeneratorC : MonoBehaviour {
 
 	private int combo = 0;
 
-	float coefRate = 1.1f;
-	ulong baseAdd = 100;
-	float penalty = -1000;
-	float startTime = 0.0f;
+    private AudioSource KomaPushedAudio;
 
+	private float coefRate = 1.1f;
+	private ulong baseAdd = 100;
+	private float penalty = -1000;
+	private float startTime = 0.0f;
 
-	float appearSum(float time){
+    private float winh = 0f;
+    private float winw = 0f;
+    private SpriteRenderer sr = null;
+    private float w = 0f;
+    private float h = 0f;
+    private float limit_x = 0f;
+
+    float appearSum(float time){
 		time = Mathf.Max (Mathf.Min (time, T), 0.0f);
 		float timeRand = time + Random.value * 0.2f * (T - time) / T;
 		return (float)(N0*timeRand + (NT - N0)*timeRand*timeRand/2.0f/T)/(N0*T+(NT - N0)*T/2.0f)*NN;
@@ -75,8 +85,15 @@ public class GeneratorC : MonoBehaviour {
 		coefRate = 1.1f;
 		baseAdd = 10;
 
+        winh = Camera.main.orthographicSize * 2;
+        winw = winh * Screen.width / Screen.height;
+        sr = myCube01.GetComponent<SpriteRenderer>();
+        w = sr.bounds.size.x;
+        h = sr.bounds.size.y;
+        limit_x = w + winw / 2.0f;
 
-		switch (StartButton.getLevel ()) {
+
+        switch (StartButton.getLevel ()) {
 		case -1:
 			NN = 100.0f;
 			break;
@@ -110,7 +127,10 @@ public class GeneratorC : MonoBehaviour {
 			appearOrder[k] = appearOrder[n];
 			appearOrder[n] = tmp;
 		}
-	}
+
+        KomaPushedAudio = gameObject.GetComponent<AudioSource>();
+
+    }
 
 	public static int getScore(){
 		return (int)score;
@@ -119,13 +139,8 @@ public class GeneratorC : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		float winh = Camera.main.orthographicSize * 2;    
-		float winw = winh * Screen.width / Screen.height;
 
         while ((int)(appearSum(Time.time - startTime) - appearCount) > 0) {
-            SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
-            float w = sr.bounds.size.x;
-            float h = sr.bounds.size.y;
             float x = 0.0f;
             float y = 0.0f;
             float xv = 0.0f;
@@ -188,7 +203,7 @@ public class GeneratorC : MonoBehaviour {
 			appearCount++;
 		}
 		//Debug.Log(appearCount);
-		Debug.Log(Input.mousePosition);
+		//Debug.Log(Input.mousePosition);
 
         checkThroughObj();
 
@@ -212,25 +227,28 @@ public class GeneratorC : MonoBehaviour {
 
 				string name = hit.collider.gameObject.name.Substring(0,2);
 				if(name == "01" || name == "02" || name == "03"){
-					Destroy(hit.collider.gameObject);
 					score += (ulong)(baseAdd * increaseRate);
 					increaseRate *= coefRate;
 					combo++;
-				}
-				if (name == "04" || name == "05" || name == "06") {
-					Destroy(hit.collider.gameObject);
+                    this.playSE(1, hit.collider.gameObject.transform.position.x / limit_x);
+                    Destroy(hit.collider.gameObject);
+                }
+                if (name == "04" || name == "05" || name == "06") {
+                    this.playSE(0, hit.collider.gameObject.transform.position.x / limit_x);
 					increaseRate = 1.0f;
 					combo = 0;
-					//penalty = Time.time + 2.0f;
-				}
-				if ( name == "05" || name == "06"){
+                    //penalty = Time.time + 2.0f;
+                    Destroy(hit.collider.gameObject);
+                }
+                if ( name == "05" || name == "06"){
 					Instantiate(myCube09, new Vector3(0, 0, -1), Quaternion.Euler(0, 0, 0));
 				}
 				if (name == "04"){
 					Instantiate(myCube07, new Vector3(0, 0, -1), Quaternion.Euler(0, 0, 0));
 				}
 				if(name == "08"){
-					Destroy(hit.collider.gameObject);
+                    this.playSE(2, hit.collider.gameObject.transform.position.x / limit_x);
+                    Destroy(hit.collider.gameObject);
 					GameObject []obstacles = GameObject.FindObjectsOfType<GameObject>();
 					foreach(GameObject obs in obstacles) {
 						name = obs.name.Substring(0,2);
@@ -292,12 +310,6 @@ public class GeneratorC : MonoBehaviour {
         GameObject[] Komas;
         Komas = GameObject.FindGameObjectsWithTag("Koma");
 
-        float winh = Camera.main.orthographicSize * 2;
-        float winw = winh * Screen.width / Screen.height;
-        SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
-        float w = sr.bounds.size.x;
-        float limit_x = w + winw / 2.0f;
-
         foreach (GameObject Koma in Komas)
         {
             if (Mathf.Abs(Koma.transform.position.x) > limit_x )
@@ -310,5 +322,13 @@ public class GeneratorC : MonoBehaviour {
                 Destroy(Koma);
             }
         }
+    }
+
+    void playSE(int idx, float coef)
+    {
+        KomaPushedAudio.panStereo = coef;
+        KomaPushedAudio.volume = 1.0f - Mathf.Abs(coef);
+        KomaPushedAudio.PlayOneShot(audioClipArray[idx]);
+
     }
 }
