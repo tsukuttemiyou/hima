@@ -273,11 +273,12 @@ public class GeneratorC : MonoBehaviour {
 		comboMesh.text = combo.ToString("000");
 
         GameObject timeObject = GameObject.Find("Time");
-		string timeText = " " + (int)(60 - (Time.time - startTime));
 		TextMesh timeMesh = timeObject.GetComponent(typeof(TextMesh) ) as TextMesh;
-		timeMesh.text = timeText.Substring(timeText.Length - 2, 2);
+        int tempTime = (int)(60 - (Time.time - startTime));
+        if(tempTime < 0) { tempTime = 0; }
+        timeMesh.text = tempTime.ToString("00");
 
-		isMouseDown = Input.GetMouseButton(0);
+        isMouseDown = Input.GetMouseButton(0);
 
         GameObject[] Komas;
         Komas = GameObject.FindGameObjectsWithTag("Koma");
