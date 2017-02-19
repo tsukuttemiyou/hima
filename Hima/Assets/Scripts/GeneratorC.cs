@@ -57,6 +57,7 @@ public class GeneratorC : MonoBehaviour {
 	float penalty = -1000;
 	float startTime = 0.0f;
 
+
 	float appearSum(float time){
 		time = Mathf.Max (Mathf.Min (time, T), 0.0f);
 		float timeRand = time + Random.value * 0.2f * (T - time) / T;
@@ -72,8 +73,7 @@ public class GeneratorC : MonoBehaviour {
 		scoreShow = 0;
 		score = 0;
 		coefRate = 1.1f;
-		baseAdd = 100;
-
+		baseAdd = 10;
 
 
 		switch (StartButton.getLevel ()) {
@@ -122,65 +122,77 @@ public class GeneratorC : MonoBehaviour {
 		float winh = Camera.main.orthographicSize * 2;    
 		float winw = winh * Screen.width / Screen.height;
 
-		while((int)(appearSum(Time.time - startTime) - appearCount) > 0){
-			SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
-			float w = sr.bounds.size.x;
-			float h = sr.bounds.size.y;
-			float x = 0.0f;
-			float y = 0.0f;
-			float xv = 0.0f;
-			float yv = 0.0f;
+        while ((int)(appearSum(Time.time - startTime) - appearCount) > 0) {
+            SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
+            float w = sr.bounds.size.x;
+            float h = sr.bounds.size.y;
+            float x = 0.0f;
+            float y = 0.0f;
+            float xv = 0.0f;
+            float yv = 0.0f;
 
-			if(Random.Range(0, 2) == 0){
-				x = w + winw/2.0f;
-				xv = -2;
-			}else{
-				x = - w - winw/2.0f;
-				xv = 2;
-			}
-			y = Random.Range(-winh/2.0f + h/2.0f, winh/2.0f - h/2.0f);
-			yv =  (Random.Range(-winh/2.0f + h/2.0f, winh/2.0f - h/2.0f) - y)/winw/2;
-			//Debug.Log(y);
-			//Debug.Log(yv);
+            if (Random.Range(0, 2) == 0) {
+                x = w + winw / 2.0f;
+                xv = -2;
+            } else {
+                x = -w - winw / 2.0f;
+                xv = 2;
+            }
+            y = Random.Range(-winh / 2.0f + h / 2.0f, winh / 2.0f - h / 2.0f);
+            yv = (Random.Range(-winh / 2.0f + h / 2.0f, winh / 2.0f - h / 2.0f) - y) / winw / 2;
+            //Debug.Log(y);
+            //Debug.Log(yv);
 
-			int index = appearOrder[appearCount];
-			GameObject cube;
-			Rigidbody rb;
-			if(index == 0){
-				cube = (GameObject)Instantiate(myCube01, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}else if(index == 1){
-				cube = (GameObject)Instantiate(myCube02, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}else if(index == 2){
-				cube = (GameObject)Instantiate(myCube03, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}else if(index == 3){
-				cube = (GameObject)Instantiate(myCube04, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}else if(index == 4){
-				cube = (GameObject)Instantiate(myCube05, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}else if(index == 5){
-				cube = (GameObject)Instantiate(myCube06, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}else if(index == 6){
-				cube = (GameObject)Instantiate(myCube08, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
-				rb = cube.GetComponent<Rigidbody>();
-				rb.velocity = new Vector3(xv, yv, 0);
-			}
+            int index = appearOrder[appearCount];
+            GameObject cube;
+            Rigidbody rb;
+            switch (index) {
+                case 0:
+                    cube = (GameObject)Instantiate(myCube01, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                case 1:
+                    cube = (GameObject)Instantiate(myCube02, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                case 2:
+                    cube = (GameObject)Instantiate(myCube03, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                case 3:
+                    cube = (GameObject)Instantiate(myCube04, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                case 4:
+                    cube = (GameObject)Instantiate(myCube05, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                case 5:
+                    cube = (GameObject)Instantiate(myCube06, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                case 6:
+                    cube = (GameObject)Instantiate(myCube08, new Vector3(x, y, 0), Quaternion.Euler(0, 0, 0));
+                    rb = cube.GetComponent<Rigidbody>();
+                    rb.velocity = new Vector3(xv, yv, 0);
+                    break;
+                default:
+                    break;
+            }
 			appearCount++;
 		}
 		//Debug.Log(appearCount);
 		Debug.Log(Input.mousePosition);
 
-		if(Input.GetMouseButton(0) && !isMouseDown && penalty < Time.time){
+        checkThroughObj();
+
+        if (Input.GetMouseButton(0) && !isMouseDown && penalty < Time.time){
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit hit ;
 			RaycastHit2D hit2d ;
@@ -253,15 +265,13 @@ public class GeneratorC : MonoBehaviour {
 
 		if (scoreShow > score) { scoreShow = score;}  //上限ガード
 
-		scoreMesh.text = scoreShow.ToString("000000000");
+		scoreMesh.text = scoreShow.ToString("00000000");
 
 		//コンボ数表示
 		GameObject comboObject = GameObject.Find("Combo");
 		TextMesh comboMesh = comboObject.GetComponent(typeof(TextMesh) ) as TextMesh;
 		comboMesh.text = combo.ToString("000");
 
-
-        int tempTime;
         GameObject timeObject = GameObject.Find("Time");
 		string timeText = " " + (int)(60 - (Time.time - startTime));
 		TextMesh timeMesh = timeObject.GetComponent(typeof(TextMesh) ) as TextMesh;
@@ -269,8 +279,35 @@ public class GeneratorC : MonoBehaviour {
 
 		isMouseDown = Input.GetMouseButton(0);
 
-		if (Time.time - startTime > 60) {
+        GameObject[] Komas;
+        Komas = GameObject.FindGameObjectsWithTag("Koma");
+        if (Time.time - startTime > 60 && Komas.Length == 0) {
 			Application.LoadLevel("Result");
 		}
 	}
+
+    void checkThroughObj()
+    {
+        GameObject[] Komas;
+        Komas = GameObject.FindGameObjectsWithTag("Koma");
+
+        float winh = Camera.main.orthographicSize * 2;
+        float winw = winh * Screen.width / Screen.height;
+        SpriteRenderer sr = myCube01.GetComponent<SpriteRenderer>();
+        float w = sr.bounds.size.x;
+        float limit_x = w + winw / 2.0f;
+
+        foreach (GameObject Koma in Komas)
+        {
+            if (Mathf.Abs(Koma.transform.position.x) > limit_x )
+            {
+                string name = Koma.name.Substring(0, 2);
+                if (name == "01" || name == "02" || name == "03"){
+                    increaseRate = 1.0f;
+                    combo = 0;
+                }
+                Destroy(Koma);
+            }
+        }
+    }
 }
