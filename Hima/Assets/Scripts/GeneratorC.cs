@@ -272,7 +272,7 @@ public class GeneratorC : MonoBehaviour {
 		//スコアが更新されていれば加算値を更新
 		if (preScore != score) {
 			addScore = (score - scoreShow) / 180;
-			Debug.Log (addScore);
+			//Debug.Log (addScore);
 			preScore = score;		//前回値保存
 		}
 
